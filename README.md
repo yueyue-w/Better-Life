@@ -2,11 +2,11 @@
 
 ## Team member
 
-Yueyue Wang: Graduate CS Student @UChicago
-Qi Zhao: Graduate CS Student @UChicago
-Qilin Zhou: Graduate CS Student @UChicago
-Jiamu Xie: Graduate CS Student @UCSD
-Shanchuan Hong: Graduate CS Student @UCSD
+- Yueyue Wang: Graduate CS Student @UChicago
+- Qi Zhao: Graduate CS Student @UChicago
+- Qilin Zhou: Graduate CS Student @UChicago
+- Jiamu Xie: Graduate CS Student @UCSD
+- Shanchuan Hong: Graduate CS Student @UCSD
 
 ## Our Scope
 
@@ -20,7 +20,7 @@ Analysis focusing on Tanzania at province level with following three key transit
 
 Understanding education gap, limitations in digital connectivity, and imbalanced resource allocations in Tanzania:
 
-SDG:
+Sustainable Development Goals (SDGs):
 
 1. Quality Education (Education Gap)
 2. Affordable and Clean Energy (Limitations in Digital and Energy Connectivity)
