@@ -27,15 +27,15 @@ SDG:
 3. Decent Work and Economic Growth (Imbalanced Resource Allocation)
 
 ## Data Source
-World Bank Group Country Survey 2014:
+- World Bank Group Country Survey 2014:
 https://microdata.worldbank.org/index.php/catalog/2237/
-National Panel Survey in Tanzania Wave 1-5:
-Wave 1 https://microdata.worldbank.org/index.php/catalog/76
-Wave 2 https://microdata.worldbank.org/index.php/catalog/1050
-Wave 3 https://microdata.worldbank.org/index.php/catalog/2252
-Wave 4 https://microdata.worldbank.org/index.php/catalog/2863
-Wave 5 https://microdata.worldbank.org/index.php/catalog/5639
-National Panel Survey 2019-2020 - Extended Panel with Sex Disaggregated Data:
+- National Panel Survey in Tanzania Wave 1-5:
+    - Wave 1 https://microdata.worldbank.org/index.php/catalog/76
+    - Wave 2 https://microdata.worldbank.org/index.php/catalog/1050
+    - Wave 3 https://microdata.worldbank.org/index.php/catalog/2252
+    - Wave 4 https://microdata.worldbank.org/index.php/catalog/2863
+    - Wave 5 https://microdata.worldbank.org/index.php/catalog/5639
+- National Panel Survey 2019-2020 - Extended Panel with Sex Disaggregated Data:
 https://microdata.worldbank.org/index.php/catalog/3885
 
 ## Methodology
