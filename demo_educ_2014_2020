@@ -1,0 +1,357 @@
+import pandas as pd
+educ_2014 = pd.read_csv("recoded_educ_2014.csv")
+educ_2020 = pd.read_csv("encoded_educ_2020.csv")
+educ_2020['region_name'] = educ_2020['region_name'].str.upper()
+
+household_counts = educ_2014.groupby('region_name')['y4_hhid'].nunique().reset_index()
+household_counts.columns = ['Region Name', 'Number of Households']
+household_counts.sort_values(by='Number of Households', ascending=False)
+
+household_counts_20 = educ_2020.groupby('region_name')['y5_hhid'].nunique().reset_index()
+household_counts_20.columns = ['Region Name', 'Number of Households']
+household_counts_20.sort_values(by='Number of Households', ascending=False)
+
+# Group the data by region and education attainment
+education_attain_by_region = educ_2014.groupby(['region_name', 'educ_attain']).size().reset_index(name='count')
+# Calculate total counts per region to use for percentage calculation
+total_counts_per_region = education_attain_by_region.groupby('region_name')['count'].transform('sum')
+# Calculate the percentage of each education level within each region
+education_attain_by_region['percentage'] = (education_attain_by_region['count'] / total_counts_per_region) * 100
+education_attain_by_region_pivot = education_attain_by_region.pivot(index='region_name', columns='educ_attain', values='percentage').fillna(0)
+education_attain_by_region_pivot.head()
+
+education_attain_by_region_20 = educ_2020.groupby(['region_name', 'educ_attain']).size().reset_index(name='count')
+# Calculate total counts per region to use for percentage calculation
+total_counts_per_region_20 = education_attain_by_region_20.groupby('region_name')['count'].transform('sum')
+# Calculate the percentage of each education level within each region
+education_attain_by_region_20['percentage'] = (education_attain_by_region_20['count'] / total_counts_per_region_20) * 100
+education_attain_by_region_pivot_20 = education_attain_by_region_20.pivot(index='region_name', columns='educ_attain', values='percentage').fillna(0)
+education_attain_by_region_pivot_20.head()
+
+import seaborn as sns
+import matplotlib.pyplot as plt 
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 10)) 
+
+
+sns.heatmap(education_attain_by_region_pivot, annot=True, fmt=".1f", linewidths=.5, cmap="YlGnBu", ax=ax1)
+ax1.set_title('Percentage of Educational Attainment by Region in 2014-2015', fontsize=20)
+ax1.set_xlabel('Education Level', fontsize=20)
+ax1.set_ylabel('Region', fontsize=20)
+
+
+
+sns.heatmap(education_attain_by_region_pivot_20, annot=True, fmt=".1f", linewidths=.5, cmap="YlGnBu", ax=ax2)
+ax2.set_title('Percentage of Educational Attainment by Region in 2020-2021', fontsize=20)
+ax2.set_xlabel('Education Level', fontsize=20)
+ax2.set_ylabel('Region', fontsize=20)
+
+
+
+plt.tight_layout()
+plt.show()
+
+
+educ_attain_cleaned_df = educ_2014.dropna(subset=['educ_attain'])
+
+educ_attain_gender_pivot = pd.pivot_table(
+    educ_attain_cleaned_df, 
+    index='male', 
+    columns='educ_attain', 
+    aggfunc='size'  
+)
+
+
+educ_attain_gender_percentage = educ_attain_gender_pivot.div(educ_attain_gender_pivot.sum(axis=1), axis=0) * 100
+
+print(educ_attain_gender_percentage)
+
+educ_attain_gender_percentage_reset = educ_attain_gender_percentage.reset_index()
+educ_attain_gender_melted = educ_attain_gender_percentage_reset.melt(id_vars='male', var_name='Educational Attainment', value_name='Percentage')
+
+
+educ_attain_gender_melted['Gender'] = educ_attain_gender_melted['male'].map({0: 'Female', 1: 'Male'})
+
+fig, ax = plt.subplots(figsize=(10, 6))
+educ_attain_gender_percentage.plot(kind='bar', stacked=True, colormap='Spectral', ax=ax)
+ax.set_title('Percentage of Educational Attainment by Gender (2014)', fontsize=16)
+ax.set_xlabel('Gender', fontsize=14)
+ax.set_ylabel('Percentage', fontsize=14)
+ax.legend(title='Educational Attainment')
+ax.set_xticklabels(['Female', 'Male'], rotation=0, fontsize=12)
+plt.tight_layout()
+plt.show()
+
+
+educ_attain_cleaned_df = educ_2020.dropna(subset=['educ_attain'])
+
+educ_attain_gender_pivot = pd.pivot_table(
+    educ_attain_cleaned_df, 
+    index='male', 
+    columns='educ_attain', 
+    aggfunc='size'  
+)
+
+
+educ_attain_gender_percentage = educ_attain_gender_pivot.div(educ_attain_gender_pivot.sum(axis=1), axis=0) * 100
+
+print(educ_attain_gender_percentage)
+
+educ_attain_gender_percentage_reset = educ_attain_gender_percentage.reset_index()
+educ_attain_gender_melted = educ_attain_gender_percentage_reset.melt(id_vars='male', var_name='Educational Attainment', value_name='Percentage')
+
+
+educ_attain_gender_melted['Gender'] = educ_attain_gender_melted['male'].map({0: 'Female', 1: 'Male'})
+
+fig, ax = plt.subplots(figsize=(10, 6))
+educ_attain_gender_percentage.plot(kind='bar', stacked=True, colormap='Spectral', ax=ax)
+ax.set_title('Percentage of Educational Attainment by Gender (2020)', fontsize=16)
+ax.set_xlabel('Gender', fontsize=14)
+ax.set_ylabel('Percentage', fontsize=14)
+ax.legend(title='Educational Attainment')
+ax.set_xticklabels(['Female', 'Male'], rotation=0, fontsize=12)
+plt.tight_layout()
+plt.show()
+
+
+# Group the data by rural/urban and education attainment
+education_attain_by_area = educ_2014.groupby(['rural', 'educ_attain']).size().reset_index(name='count')
+total_counts_per_area = education_attain_by_area.groupby('rural')['count'].transform('sum')
+education_attain_by_area['percentage'] = (education_attain_by_area['count'] / total_counts_per_area) * 100
+education_attain_by_area_pivot = education_attain_by_area.pivot(index='rural', columns='educ_attain', values='percentage').fillna(0)
+education_attain_by_area_pivot.head()
+
+education_attain_by_area_20 = educ_2020.groupby(['rural', 'educ_attain']).size().reset_index(name='count')
+total_counts_per_area_20 = education_attain_by_area_20.groupby('rural')['count'].transform('sum')
+education_attain_by_area_20['percentage'] = (education_attain_by_area_20['count'] / total_counts_per_area_20) * 100
+education_attain_by_area_pivot_20 = education_attain_by_area_20.pivot(index='rural', columns='educ_attain', values='percentage').fillna(0)
+education_attain_by_area_pivot_20.head()
+
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 8)) 
+
+sns.heatmap(education_attain_by_area_pivot, annot=True, fmt=".1f", linewidths=.5, cmap="crest", ax=ax1)
+ax1.set_title('Percentage of Educational Attainment in Rural vs. Urban Areas in 2014', fontsize=16)
+ax1.set_xlabel('Education Level', fontsize=14)
+ax1.set_ylabel('Area', fontsize=14)
+ax1.set_yticks([0.5, 1.5])
+ax1.set_yticklabels(['Urban', 'Rural'], va='center')
+
+
+sns.heatmap(education_attain_by_area_pivot_20, annot=True, fmt=".1f", linewidths=.5, cmap="crest", ax=ax2)
+ax2.set_title('Percentage of Educational Attainment in Rural vs. Urban Areas in 2020', fontsize=16)
+ax2.set_xlabel('Education Level', fontsize=14)
+ax2.set_ylabel('Area', fontsize=14)
+ax2.set_yticks([0.5, 1.5])
+ax2.set_yticklabels(['Urban', 'Rural'], va='center')
+
+
+plt.tight_layout()
+
+
+plt.show()
+
+
+#Public/Private in each region
+public_school_by_region = educ_2014.groupby(['region_name', 'public']).size().reset_index(name='count')
+
+public_school_by_region_pivot = public_school_by_region.pivot(index='region_name', columns='public', values='count').fillna(0)
+
+public_school_by_region_pivot = public_school_by_region_pivot.fillna(0)
+
+public_school_by_region_pivot['Public'] = (public_school_by_region_pivot[1] / 
+                                               (public_school_by_region_pivot[0] + public_school_by_region_pivot[1])) * 100
+
+public_school_by_region_pivot['Public'].head()
+
+public_school_percentage = public_school_by_region_pivot['Public'].to_frame()
+plt.figure(figsize=(8, 12))
+sns.heatmap(public_school_percentage, annot=True, fmt=".1f", linewidths=.5, cmap="YlGnBu")
+
+
+plt.title('Public School Attendance Percentage by Region', fontsize=20)
+plt.xlabel('School Type', fontsize=16)
+plt.ylabel('Region', fontsize=16)
+plt.xticks([])
+plt.yticks(fontsize=12)
+
+
+plt.show()
+
+plt.figure(figsize=(14, 10))
+sns.heatmap(school_provision_by_region.set_index('region_name'), annot=True, fmt=".1f", linewidths=.5, cmap="YlGnBu")
+
+plt.title('School Provisions by Region', fontsize=16)
+plt.xlabel('Provision', fontsize=14)
+plt.ylabel('Region', fontsize=14)
+plt.xticks(rotation=45, ha='right', fontsize=12)
+plt.yticks(fontsize=12)
+
+plt.show()
+
+
+infrastructure_columns = ['transportation', 'time_to_school']
+
+infrastructure_by_region = educ_2014.groupby('region_name')[infrastructure_columns].mean().reset_index()
+
+infrastructure_by_region['transportation'] *= 100
+infrastructure_by_region.head()
+
+plt.figure(figsize=(10, 10))
+infrastructure_heatmap = sns.heatmap(infrastructure_by_region.set_index('region_name'), annot=True, fmt=".2f", linewidths=.5, cmap="YlGnBu")
+
+# Add labels and title
+plt.title('School Infrastructure by Region', fontsize=16)
+plt.xlabel('Infrastructure Indicator', fontsize=14)
+plt.ylabel('Region', fontsize=14)
+plt.xticks(rotation=45, ha='right', fontsize=12)
+plt.yticks(fontsize=12)
+
+# Show the heatmap
+plt.show()
+
+#Absent_reasons
+absent_reasons_by_region = educ_2014.groupby(['region_name', 'absent_reason']).size().reset_index(name='count')
+
+absent_reasons_by_region_pivot = absent_reasons_by_region.pivot(index='region_name', columns='absent_reason', values='count').fillna(0)
+
+total_absences_per_region = absent_reasons_by_region_pivot.sum(axis=1)
+
+absent_reasons_by_region_percent = (absent_reasons_by_region_pivot.T / total_absences_per_region).T * 100
+
+absent_reasons_by_region_percent.head()
+
+plt.figure(figsize=(16, 12))
+sns.heatmap(absent_reasons_by_region_percent, annot=True, fmt=".1f", linewidths=.5, cmap="YlOrRd")
+
+
+plt.title('Absent Reasons as a Percentage by Region', fontsize=20)
+plt.xlabel('Absent Reason', fontsize=16)
+plt.ylabel('Region', fontsize=16)
+plt.xticks(rotation=45, ha='right', fontsize=12)
+plt.yticks(fontsize=12)
+
+
+plt.show()
+
+#household employment
+employment_columns = ['unpaid_employee_12m', 'non_farm_12m', 'house_farm_12m']
+
+employment_educ_attainment = educ_2014.groupby("educ_attain")[employment_columns].mean().reset_index()
+
+employment_educ_attainment[employment_columns] *= 100
+
+employment_educ_attainment.head()
+
+employment_educ_attainment = employment_educ_attainment.rename(
+    columns={
+        'unpaid_employee_12m': 'Unpaid Employee',
+        'non_farm_12m': 'Non-Farm Business',
+        'house_farm_12m': 'Household Farm'
+    }
+)
+plt.figure(figsize=(10, 6))
+employment_educ_attainment_heatmap = sns.heatmap(
+    employment_educ_attainment.set_index('educ_attain'),
+    annot=True,
+    fmt=".1f",
+    linewidths=.5,
+    cmap="YlGnBu"
+)
+
+
+plt.title('Household Employment Types by Educational Attainment', fontsize=16)
+plt.xlabel('Employment Type', fontsize=14)
+plt.ylabel('Educational Attainment', fontsize=14)
+plt.xticks(rotation=45, ha='right', fontsize=12)
+plt.yticks(fontsize=12)
+
+
+plt.show()
+
+#School_experience_summary
+psle_pass_summary = educ_2020['pass_psle'].describe()
+psle_pass_counts = educ_2020['pass_psle'].value_counts()
+
+#KNN model
+import pandas as pd
+import numpy as np
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.preprocessing import OneHotEncoder, StandardScaler, FunctionTransformer
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.inspection import permutation_importance
+
+combined_df = pd.concat([educ_2014, educ_2020], ignore_index=True)
+
+features = [
+    'male', 'father_educ', 'mother_educ', 'cur_married', 'rural',
+    'start_school_age', 'board', 'public', 'time_to_school',
+    'free_meal_school', 'access_textbook', 'school_fee', 'book_mat',
+    'uniform_fee', 'meal_cost'
+]
+target = 'pass_psle'
+
+
+mode_value = combined_df[target].mode()[0]
+combined_df[target] = combined_df[target].fillna(mode_value)
+
+
+X = combined_df[features]
+y = combined_df[target]
+
+
+categorical_cols = X.select_dtypes(include=['object', 'bool']).columns.tolist()
+numerical_cols = list(set(X.columns) - set(categorical_cols))
+
+
+categorical_transformer = Pipeline(steps=[
+    ('imputer', SimpleImputer(strategy='constant', fill_value='missing')),
+    ('to_string', FunctionTransformer(lambda x: x.astype(str))),
+    ('onehot', OneHotEncoder(handle_unknown='ignore'))
+])
+numerical_transformer = Pipeline(steps=[
+    ('imputer', SimpleImputer(strategy='median')),
+    ('scaler', StandardScaler())
+])
+
+
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('num', numerical_transformer, numerical_cols),
+        ('cat', categorical_transformer, categorical_cols)
+    ]
+)
+
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+
+X_train_preprocessed = preprocessor.fit_transform(X_train)
+X_test_preprocessed = preprocessor.transform(X_test)
+
+
+knn_model = KNeighborsClassifier()
+
+# Train the model
+knn_model.fit(X_train_preprocessed, y_train)
+
+y_pred = knn_model.predict(X_test_preprocessed)
+
+# Calculate metrics
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred, average='binary')
+recall = recall_score(y_test, y_pred, average='binary')
+f1 = f1_score(y_test, y_pred, average='binary')
+
+# Print performance metrics
+print(f"Accuracy: {accuracy}")
+print(f"Precision: {precision}")
+print(f"Recall: {recall}")
+print(f"F1 Score: {f1}")
+
+
+
